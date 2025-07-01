@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка голоса</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f5f5f5;
+        }
+        #status {
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Отправка голоса...</h1>
+    <div id="status">Идет отправка данных на сервер...</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusElement = document.getElementById('status');
+            
+            // 1. Создаем FormData для POST-запроса
+            const formData = new FormData();
+            formData.append('track_id', '2105');
+            formData.append('iteration_id', '643');
+
+            // 2. Отправляем запрос
+            fetch('https://www.nashe.ru/chartova/vote', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include' // Если нужны куки
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сервер вернул ошибку');
+                }
+                return response.text(); // или .json(), если сервер возвращает JSON
+            })
+            .then(data => {
+                statusElement.textContent = '✅ Голос успешно отправлен!';
+                statusElement.className = 'success';
+            })
+            .catch(error => {
+                statusElement.textContent = `❌ Ошибка: ${error.message}`;
+                statusElement.className = 'error';
+            })
+            .finally(() => {
+                // Закрываем страницу через 5 секунд
+                setTimeout(() => {
+                    window.close();
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>
