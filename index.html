@@ -53,45 +53,67 @@
             const statusElement = document.getElementById('status');
             const responseElement = document.getElementById('server-response');
             
-            // 1. Создаем FormData для POST-запроса
+			// Выносим значения в отдельные переменные
+            const track_id = '2105';
+            const iteration_id = '645';
+            
             const formData = new FormData();
-            formData.append('track_id', '2105');
-            formData.append('iteration_id', '645');
+            formData.append('track_id', track_id);
+            formData.append('iteration_id', iteration_id);
 
-            // 2. Отправляем запрос
+												   
             fetch('https://www.nashe.ru/chartova/vote', {
                 method: 'POST',
                 body: formData,
-                credentials: 'include' // Если нужны куки
+                credentials: 'include'
             })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Сервер вернул ошибку');
                 }
-                return response.text(); // или .json(), если сервер возвращает JSON
+                return response.text(); // Получаем как текст сначала
             })
-            .then(data => {
-                statusElement.textContent = '✅ Голос за Casual (id=2105) успешно отправлен в Чартовую Дюжину Нашего Радио !';
-                statusElement.className = 'success';
-                // Декодируем Unicode-строки в ответе
-                if (data.message) {
-                    data.message = unicodeToChar(data.message);
+            .then(text => {
+                try {
+                    // Пытаемся распарсить возможный двойной JSON
+                    let data = JSON.parse(text);
+                    if (typeof data === 'string') {
+                        data = JSON.parse(data); // Если внутри еще JSON
+                    }
+                    
+                    // Декодируем Unicode-строки
+                    if (data.message) {
+                        data.message = unicodeToChar(data.message);
+                    }
+                    
+                    statusElement.textContent = `✅ Голос в голосовании № ${track_id}за Casual (id=${track_id}) успешно отправлен в Чартовую Дюжину Нашего Радио!`;
+                    statusElement.className = 'success';
+                    
+                    responseElement.style.display = 'block';
+                    responseElement.textContent = 'Ответ сервера:\n' + data.message;
+                } catch (e) {
+                    // Если не JSON, выводим как есть
+                    statusElement.textContent = '✅ Голос отправлен!';
+                    statusElement.className = 'success';
+                    
+                    responseElement.style.display = 'block';
+                    responseElement.textContent = 'Ответ сервера:\n' + unicodeToChar(text);
                 }
-                // Показываем ответ сервера
-                responseElement.style.display = 'block';
-                responseElement.textContent = 'Ответ сервера:\n' + JSON.stringify(data, null, 2);
+																 
+														
+																											 
 
             })
             .catch(error => {
                 statusElement.textContent = `❌ Ошибка: ${error.message}`;
                 statusElement.className = 'error';
-                
-                // Показываем полную информацию об ошибке
+				
+				// Показываем полную информацию об ошибке														   
                 responseElement.style.display = 'block';
                 responseElement.textContent = 'Подробности ошибки:\n' + error;
             })
             .finally(() => {
-                // Закрываем страницу через 10 секунд (увеличил время для чтения ответа)
+				// Закрываем страницу через 10 секунд (увеличил время для чтения ответа)																																
                 setTimeout(() => {
                     window.close();
                 }, 10000);
@@ -100,3 +122,4 @@
     </script>
 </body>
 </html>
+			   
