@@ -43,6 +43,12 @@
     <div id="server-response" style="display: none;"></div>
 
     <script>
+        // Функция для преобразования Unicode-escape в читаемый текст
+        function unicodeToChar(text) {
+            return text.replace(/\\u[\dA-F]{4}/gi, 
+                match => String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16)));
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const statusElement = document.getElementById('status');
             const responseElement = document.getElementById('server-response');
@@ -67,10 +73,14 @@
             .then(data => {
                 statusElement.textContent = '✅ Голос за Casual (id=2105) успешно отправлен в Чартовую Дюжину Нашего Радио !';
                 statusElement.className = 'success';
-                
+                // Декодируем Unicode-строки в ответе
+                if (data.message) {
+                    data.message = unicodeToChar(data.message);
+                }
                 // Показываем ответ сервера
                 responseElement.style.display = 'block';
-                responseElement.textContent = 'Ответ сервера:\n' + data;
+                responseElement.textContent = 'Ответ сервера:\n' + JSON.stringify(data, null, 2);
+
             })
             .catch(error => {
                 statusElement.textContent = `❌ Ошибка: ${error.message}`;
