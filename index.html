@@ -4,122 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отправка голоса</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #f5f5f5;
-        }
-        #status {
-            font-size: 18px;
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        #server-response {
-            font-size: 16px;
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: #e2e3e5;
-            color: #383d41;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">w
 </head>
 <body>
     <h1>Отправка голоса...</h1>
     <div id="status">Идет отправка данных на сервер...</div>
     <div id="server-response" style="display: none;"></div>
-
-    <script>
-        // Функция для преобразования Unicode-escape в читаемый текст
-        function unicodeToChar(text) {
-            return text.replace(/\\u[\dA-F]{4}/gi, 
-                match => String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16)));
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const statusElement = document.getElementById('status');
-            const responseElement = document.getElementById('server-response');
-            
-			// Выносим значения в отдельные переменные
-            const track_id = '2105';
-            const iteration_id = '645';
-            
-            const formData = new FormData();
-            formData.append('track_id', track_id);
-            formData.append('iteration_id', iteration_id);
-
-												   
-            fetch('https://www.nashe.ru/chartova/vote', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Сервер вернул ошибку');
-                }
-                return response.text(); // Получаем как текст сначала
-            })
-            .then(text => {
-                try {
-                    // Пытаемся распарсить возможный двойной JSON
-                    let data = JSON.parse(text);
-                    if (typeof data === 'string') {
-                        data = JSON.parse(data); // Если внутри еще JSON
-                    }
-                    
-                    // Декодируем Unicode-строки
-                    if (data.message) {
-                        data.message = unicodeToChar(data.message);
-                    }
-                    
-                    statusElement.textContent = `✅ Голос в голосовании № ${iteration_id} за Casual (id=${track_id}) успешно отправлен в Чартовую Дюжину Нашего Радио!`;
-                    statusElement.className = 'success';
-                    
-                    responseElement.style.display = 'block';
-                    responseElement.textContent = 'Ответ сервера:\n' + data.message;
-                } catch (e) {
-                    // Если не JSON, выводим как есть
-                    statusElement.textContent = '✅ Голос отправлен!';
-                    statusElement.className = 'success';
-                    
-                    responseElement.style.display = 'block';
-                    responseElement.textContent = 'Ответ сервера:\n' + unicodeToChar(text);
-                }
-																 
-														
-																											 
-
-            })
-            .catch(error => {
-                statusElement.textContent = `❌ Ошибка: ${error.message}`;
-                statusElement.className = 'error';
-				
-				// Показываем полную информацию об ошибке														   
-                responseElement.style.display = 'block';
-                responseElement.textContent = 'Подробности ошибки:\n' + error;
-            })
-            .finally(() => {
-				// Закрываем страницу через 10 секунд (увеличил время для чтения ответа)																																
-                setTimeout(() => {
-                    window.close();
-                }, 10000);
-            });
-        });
-    </script>
+    <script src="script.js"></script>
+   
 </body>
 </html>
-			   
+			
