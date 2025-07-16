@@ -4,15 +4,20 @@ function unicodeToChar(text) {
       /\\u[\dA-F]{4}/gi,
       match => String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16))
     );
-  }
+}
   
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   
     // Парсит страницу голосования в поисках data-iteration (номера голосования)
     function getdata_iterationXHR() {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://www.nashe.ru/chartova', true);
+        // Устанавливаем заголовки запроса как в CorsE
+          // Устанавливаем заголовки запроса как в CorsE
+            xhr.setRequestHeader('Origin', window.location.origin);
+            xhr.setRequestHeader('Access-Control-Request-Method', 'POST');
+            xhr.setRequestHeader('Access-Control-Request-Headers', 'content-type');
         xhr.onload = function() {
           if (xhr.status === 200) {
             const html = xhr.responseText;
@@ -38,7 +43,7 @@ function unicodeToChar(text) {
     }
   
     // Функция отправки одного голоса с указанием порядка (count)
-    function sendVote(count = 1) {
+    function sendVote(count = 1, iteration_id) {
       return new Promise(async (resolve, reject) => {
         try {
           const statusElement = document.getElementById(`status${count}`);
@@ -47,14 +52,16 @@ function unicodeToChar(text) {
           statusElement.textContent = '⌛ Отправка голоса...';
           statusElement.className = 'status pending';
   
-          // Получаем текущий номер голосования
-          const iteration_id = await getdata_iterationXHR();
           // id Casual
           const track_id = '2105';
           
           const xhr = new XMLHttpRequest();
           xhr.open('POST', 'https://www.nashe.ru/chartova/vote', true);
           //xhr.withCredentials = true;
+          // Устанавливаем заголовки запроса как в CorsE
+            xhr.setRequestHeader('Origin', window.location.origin);
+            xhr.setRequestHeader('Access-Control-Request-Method', 'POST');
+            xhr.setRequestHeader('Access-Control-Request-Headers', 'content-type');
   
           xhr.onload = function() {
             if (xhr.status === 200) {
@@ -117,11 +124,18 @@ function unicodeToChar(text) {
   
     // Последовательно отправляем 3 голоса с задержкой
     async function sendAllVotes() {
-      await sendVote(1);
-      await new Promise(resolve => setTimeout(resolve, getRandomDelay()));
-      await sendVote(2);
-      await new Promise(resolve => setTimeout(resolve, getRandomDelay()));
-      await sendVote(3);
+        try {
+            // Получаем номер голосования один раз
+            const iteration_id = await getdata_iterationXHR();
+            
+            await sendVote(1, iteration_id);
+            await new Promise(resolve => setTimeout(resolve, getRandomDelay()));
+            await sendVote(2, iteration_id);
+            await new Promise(resolve => setTimeout(resolve, getRandomDelay()));
+            await sendVote(3, iteration_id);
+        } catch (error) {
+            console.error('Ошибка при отправке голосов:', error);
+        }
     }
   
     // Генератор случайной задержки от 900 до 1500 мс
