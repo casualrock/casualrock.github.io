@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    background-color: #f5f5f5;
+}
+#status {
+    font-size: 18px;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 5px;
+}
+#server-response {
+    font-size: 16px;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #e2e3e5;
+    color: #383d41;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
