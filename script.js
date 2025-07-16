@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
               
               const chartovaItems = doc.querySelector('div.chartova__items');
               if (chartovaItems) {
-                const data_iteration = chartovaItems.getAttribute('data-iteration');
-                console.log('Найден data-iteration:', data_iteration);
-                resolve(data_iteration);
+                const iteration_id = chartovaItems.getAttribute('data-iteration');
+                console.log('Найден data-iteration:', iteration_id);
+                resolve(iteration_id);
               } else {
                 reject(new Error('Элемент div.chartova__items не найден'));
               }
@@ -45,14 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
     async function sendVote() {
         try {
             // Получаем текущий номер голосования
-            const data_iteration = await getdata_iterationXHR();
+            const iteration_id = await getdata_iterationXHR();
             
             // id Casual
-            const data_track = '2105';
+            const track_id = '2105';
             
             const formData = new FormData();
-            formData.append('data_track', data_track);
-            formData.append('data_iteration', data_iteration);
+            formData.append('track_id', track_id);
+            formData.append('iteration_id', iteration_id);
 
             const response = await fetch('https://www.nashe.ru/chartova/vote', {
                 method: 'POST',
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Успешный голос
-            statusElement.textContent = `✅ Голос в голосовании № ${data_iteration} за Casual (id=${data_track}) успешно отправлен!`;
+            statusElement.textContent = `✅ Голос в голосовании № ${iteration_id} за Casual (id=${track_id}) успешно отправлен!`;
             statusElement.className = 'success';
             
             responseElement.style.display = 'block';
