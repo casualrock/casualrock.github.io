@@ -13,11 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://www.nashe.ru/chartova', true);
-        // Устанавливаем заголовки запроса как в CorsE
-          // Устанавливаем заголовки запроса как в CorsE
-            xhr.setRequestHeader('Origin', window.location.origin);
-            xhr.setRequestHeader('Access-Control-Request-Method', 'POST');
-            xhr.setRequestHeader('Access-Control-Request-Headers', 'content-type');
         xhr.onload = function() {
           if (xhr.status === 200) {
             const html = xhr.responseText;
@@ -58,10 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const xhr = new XMLHttpRequest();
           xhr.open('POST', 'https://www.nashe.ru/chartova/vote', true);
           //xhr.withCredentials = true;
-          // Устанавливаем заголовки запроса как в CorsE
-            xhr.setRequestHeader('Origin', window.location.origin);
-            xhr.setRequestHeader('Access-Control-Request-Method', 'POST');
-            xhr.setRequestHeader('Access-Control-Request-Headers', 'content-type');
+
   
           xhr.onload = function() {
             if (xhr.status === 200) {
